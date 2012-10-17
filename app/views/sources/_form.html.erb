@@ -1,0 +1,78 @@
+<div class='source_div'>
+  <div class='source_form'>
+    <%= form_for([@person, @source]) do |f| %>
+      <% if @source.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@source.errors.count, "error") %> prohibited this source from being saved:</h2>
+
+          <ul>
+          <% @source.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="field">
+        <%= f.label :name %><br />
+        <%= f.text_field :name %>
+      </div>
+      <div class="field" id="provider-select-div">
+        <%= f.label :provider %><br />
+        <%= f.select :provider, ["endnote", "mendeley", "refworks", "zotero"], {:prompt => 'Select Source Type'} %>
+      </div>
+      <div id="provider-details">
+        <div class="provider" id="empty"></div>
+      </div>
+      <div class="field" id="default-style">
+        <%= f.label :default_style %><br />
+        <%= f.select :default_style, @styles %>
+      </div>
+    <% end %>
+  </div>
+  <div id="provider-specifics" style="display:none;">
+    <%= form_for([@person, @source]) do |f| %>
+      <div class="provider" id="endnote">
+        <div class="field">
+          <%= f.label :client_id %><br />
+          <%= f.text_field :client_id %>
+        </div>
+        <div class="field">
+          <%= f.label :client_key %><br />
+          <%= f.text_field :client_key %>
+        </div>
+        <div class="field">
+          <%= f.label :client_secret %><br />
+          <%= f.text_field :client_secret %>
+        </div>
+        <div class="field">
+          <%= f.label :client_type %><br />
+          <%= f.text_field :client_type %>
+        </div>
+        <div class="field" style="display:none;">
+          <%= f.label :uid %><br />
+          <%= f.text_field :uid %>
+        </div>
+        <div class="field" style="display:none;">
+          <%= f.label :person_id %><br />
+          <%= f.text_field :person_id %>
+        </div>
+      </div>
+      <div class="provider" id="mendeley">
+        <p>mendeley form</p>
+      </div>
+      <div class="provider" id="refworks">
+        <p>refworks form</p>
+      </div>
+      <div class="provider" id="zotero">
+        <div class="field">
+          <%= f.label :zotero_user_id %><br />
+          <%= f.text_field :client_id %>
+        </div>
+        <div class="field">
+          <%= f.label :zotero_key %><br />
+          <%= f.text_field :client_key %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

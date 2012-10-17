@@ -1,0 +1,56 @@
+<div>
+	<span id="new_source">
+		<%= link_to 'New Citations Source',  new_person_source_path(@person) %>
+	</span>
+	<span id="preferences">
+		<%= link_to 'Preferences',  edit_person_path(@person) %>
+	</span>
+
+</div>
+
+<h1>Citations Manager</h1>
+<table width="100%">
+	<tr>
+		<th id="sources_head" width="33%" align="left">
+			<h2>Sources</h2>
+		</th>
+		<th id="items_head" width="66%" align="left">
+			<h2>Citations</h2>
+		</th>
+	</tr>
+
+	<tr>
+		<td headers="sources_head" id="sources_list" valign="top" style="margin:0em 2em 0em 2em;">
+			<!-- rendering _sources.html.erb -->
+			<%= render 'sources' %>
+		</td>
+		<td headers="items_head" id="items_list" valign="top" style="margin:0em 2em 0em 2em;">
+			
+		</td>
+	</tr>
+</table>
+
+<div id="dialog">
+</div>
+
+<div style="display:none;">
+	<p>
+		<%= @person %>
+	</p>
+	<p>
+		<%= @person.id %>
+		(@person.id)
+	</p>
+	<p>
+		<%= @person.full_name %>
+		(@person.full_name)
+	</p>
+	<p>
+		<%= @person.given_name %>
+		(@person.given_name)
+	</p>
+	<p>
+		<%= @person.family_name %>
+		(@person.family_name)
+	</p>
+</div>

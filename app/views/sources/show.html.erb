@@ -1,0 +1,45 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Person:</b>
+  <%= @source.person_id %>
+</p>
+
+<p>
+  <b>Provider:</b>
+  <%= @source.provider %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @source.name %>
+</p>
+
+<p>
+  <b>Client:</b>
+  <%= @source.client_id %>
+</p>
+
+<p>
+  <b>Client key:</b>
+  <%= @source.client_key %>
+</p>
+
+<p>
+  <b>Client secret:</b>
+  <%= @source.client_secret %>
+</p>
+
+<p>
+  <b>Client type:</b>
+  <%= @source.client_type %>
+</p>
+
+<p>
+  <b>Uid:</b>
+  <%= @source.uid %>
+</p>
+
+
+<%= link_to 'Edit', edit_source_path(@source) %> |
+<%= link_to 'Back', sources_path %>

@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  person_id: MyString
+  provider: MyString
+  name: MyString
+  client_id: MyString
+  client_key: MyString
+  client_secret: MyString
+  client_type: MyString
+  uid: MyString
+
+two:
+  person_id: MyString
+  provider: MyString
+  name: MyString
+  client_id: MyString
+  client_key: MyString
+  client_secret: MyString
+  client_type: MyString
+  uid: MyString
