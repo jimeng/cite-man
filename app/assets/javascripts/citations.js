@@ -9,7 +9,7 @@ citations_manager.init = function() {
 					$('#dialog').html(data);
 					$('#dialog').dialog({
 						title: "New Citations Source",
-						width: 500,
+						width: 700,
 						modal: true,
 						draggable: true,
 						autoOpen: true,
@@ -50,14 +50,14 @@ citations_manager.init = function() {
 					$('#dialog').html(data);
 					$('#dialog').dialog({
 						title: "Preferences",
-						width: 600,
+						width: 700,
 						modal: true,
 						draggable: true,
 						autoOpen: true,
 						buttons: [{
 							text: "Save",
 							click: function(button){
-								var form_tag = $(button.target).closest('.ui-dialog').find('.source_form form');
+								var form_tag = $(button.target).closest('.ui-dialog').find('.preferences_form form');
 								var url = $(form_tag).attr('action');
 								var params = $(form_tag).serialize();
 								$.ajax(url, {
