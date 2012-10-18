@@ -19,7 +19,7 @@ ActiveRecord::Schema.define(:version => 20121016170838) do
     t.string   "user_id"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
-    t.string   "preferredStyle"
+    t.string   "preferred_style"
     t.string   "preferred_locale"
   end
 
