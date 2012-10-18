@@ -9,7 +9,7 @@ citations_manager.init = function() {
 					$('#dialog').html(data);
 					$('#dialog').dialog({
 						title: "New Citations Source",
-						width: 500,
+						width: 700,
 						modal: true,
 						draggable: true,
 						autoOpen: true,
