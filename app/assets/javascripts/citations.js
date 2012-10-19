@@ -1,5 +1,24 @@
 var citations_manager = citations_manager || {};
 
+citations_manager.setCookie = function(cookie_name, cookie_value, expiry_days) {
+	var expires = new Date();
+	expires.setDate(expires.getDate() + expiry_days);
+	var c_value = escape(cookie_value) + ((exdays == null) ? "" : "; expires=" + expires.toUTCString());
+	document.cookie = cookie_name + "=" + c_value;
+};
+
+citations_manager.getCookie = function(cookie_name) {
+	var cookies = document.cookie.split(";");
+	for (var i = 0; i < cookies.length; i++) {
+	  var name = cookies[i].substr(0, cookies[i].indexOf("="));
+	  var value = cookies[i].substr(cookies[i].indexOf("=") + 1);
+	  name = name.replace(/^\s+|\s+$/g,"");
+	  if (name == cookie_name) {
+	    return unescape(value);
+	  }
+	}
+}
+
 citations_manager.init = function() {
 	$(document).ready(function(){
 		$('#new_source a').live('click', function(eventObject){
@@ -89,15 +108,54 @@ citations_manager.init = function() {
 			var citations_url = $(eventObject.target).siblings('.items_link').find('a').attr('href');
 			if("frame" == link_target) {
 				window.location = citations_url;
-			} else {}
-				$('.person_source').removeClass('selectedSource');
-				$(eventObject.target).closest('.person_source').addClass('selectedSource')
+			} else {
+				var load_citations = false;
+				var source_type = $(eventObject.target).siblings('.provider').text();
+				if('mendeley' == source_type) {
+					var cval = citations_manager.getCookie('mendeley_access_token');
+					if(cval) {
+						load_citations == true;
+					} else {
+						$.ajax(citations_url, {
+							dataType: 'json',
+							success : function(json) {
+								if(json && json.authorize_url) {
+									var iframe = '<iframe src="' + json.authorize_url + '" width="100%" height="400">mendeley dialog</iframe>'
+									$('#dialog').html(iframe);
+									$('#dialog').dialog({
+										title: "Mendeley Authorization",
+										modal: true,
+										draggable: true,
+										autoOpen: true,
+										width: 700,
+										height: 500,
+										buttons: [{
+											text: "Close",
+												click: function(){
+												$('#dialog').dialog("close");
+												$('#dialog').html('');
+											}
+										}]
+									});
+								}
+							}
+						});
+						
+					}
+				} else {
+					load_citations = true;
+				}
+				if(load_citations) {
+					$('.person_source').removeClass('selectedSource');
+					$(eventObject.target).closest('.person_source').addClass('selectedSource')
 
-				var source_id = $(eventObject.target).siblings('.source_id').text();
-				var details_url = $(eventObject.target).siblings('.show_link').find('a').attr('href');
 
-				citations_manager.load_source(source_id, details_url, citations_url);
-			
+					var source_id = $(eventObject.target).siblings('.source_id').text();
+					var details_url = $(eventObject.target).siblings('.show_link').find('a').attr('href');
+
+					citations_manager.load_source(source_id, details_url, citations_url);
+				}
+			}
 		});
 		$('.show_link a').live('click', function(eventObject){
 			var href = $(eventObject.target).attr('href');

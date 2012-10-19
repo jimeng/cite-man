@@ -58,13 +58,7 @@ class SourcesController < ActionController::Base
 
     @source = @person.sources.new(params[:source])
 
-    case 
-    when @source[:provider] == 'mendeley' && isNull( @source[:code01] )
-      logger.info("mendeley source created")
-      auth_mendeley
-    else
-      render_sources
-    end
+    render_sources
   end
 
   # PUT /sources/1
