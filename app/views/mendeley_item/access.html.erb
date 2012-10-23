@@ -1,0 +1,13 @@
+<%= javascript_include_tag "jquery-1.7.2.min" %>
+<%= javascript_include_tag "jquery-ui-1.8.21.custom.min" %>
+<%= javascript_include_tag "citations" %>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		var dialog = parent.document.getElementById("dialog");
+		alert(dialog);
+		parent.window.$(dialog).dialog('close');
+		// $(dialog).html('');
+	});
+</script>

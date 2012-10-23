@@ -120,7 +120,7 @@ citations_manager.init = function() {
 							dataType: 'json',
 							success : function(json) {
 								if(json && json.authorize_url) {
-									var iframe = '<iframe src="' + json.authorize_url + '" width="100%" height="400">mendeley dialog</iframe>'
+									var iframe = '<iframe src="' + json.authorize_url + '" width="100%" height="360">mendeley dialog</iframe>'
 									$('#dialog').html(iframe);
 									$('#dialog').dialog({
 										title: "Mendeley Authorization",
@@ -128,7 +128,7 @@ citations_manager.init = function() {
 										draggable: true,
 										autoOpen: true,
 										width: 700,
-										height: 500,
+										height: 560,
 										buttons: [{
 											text: "Close",
 												click: function(){
@@ -250,6 +250,11 @@ citations_manager.init = function() {
 			$('#provider-details').append(new_provider_details);
 		});
 	});
+};
+
+citations_manager.close_dialog = function() {
+	$('#dialog').dialog("close");
+	$('#dialog').html('');
 };
 
 citations_manager.load_source = function(source_id, details_url, citations_url) {
