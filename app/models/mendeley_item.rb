@@ -82,7 +82,10 @@ class MendeleyItem < ActiveResource::Base
         end
       }
     }
-    return formatted_citations
+    rv = {}
+    rv[:items] = formatted_citations
+
+    return rv
   end
 
   def MendeleyItem.processAuthors(raw_list = [])
