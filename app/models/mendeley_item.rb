@@ -15,10 +15,15 @@ class MendeleyItem < ActiveResource::Base
       :access_token_path  => "/oauth/access_token/",
       :authorize_path     => "/oauth/authorize/"
     })
-    request_token = consumer.get_request_token({:oauth_callback => callbackUrl})
-    Rails.logger.info(request_token)
-    authorize_url = request_token.authorize_url
-    Rails.logger.info(authorize_url)
+    begin
+      request_token = consumer.get_request_token({:oauth_callback => callbackUrl})
+      Rails.logger.info(request_token)
+      authorize_url = request_token.authorize_url
+      Rails.logger.info(authorize_url)
+    rescue => e
+      Rails.logger.warn(e.message)
+      Rails.logger.warn(e.class)
+    end
     return request_token
   end
 
@@ -42,7 +47,7 @@ class MendeleyItem < ActiveResource::Base
         r = access_token.get("/oapi/library/documents/#{id}/")
         if(Net::HTTPSuccess === r) 
           cite = JSON.parse(r.body)
-         list.push cite
+          list.push cite
        end
       }
       Rails.logger.info( list )
@@ -56,7 +61,7 @@ class MendeleyItem < ActiveResource::Base
 
   def MendeleyItem.cslFormat(citations = [])
     formatted_citations = []
-    citation.each { |citation|
+    citations.each { |citation|
       citation.each{ |name,value|
         formatted_citation = {}
         case name
