@@ -1,8 +1,8 @@
 Citations::Application.routes.draw do
 
-  match "/auth/mendeley/callback" => "sources_controller#auth_mendeley"
-  #match "/source/auth/mendeley" => "sources_controller#auth_mendeley"
-
+  match "/sources/:source_id/mendeley/auth" => "mendeley_item#auth", :as => :mendeley_auth
+  match "/sources/:source_id/mendeley/access" => "mendeley_item#access", :as => :mendeley_access
+ 
   resources :people do
     resources :sources
   end
@@ -12,7 +12,7 @@ Citations::Application.routes.draw do
       get :items
     end
     resources :zotero_item
-    resources :mendeley_item
+    resources :mendeley_item 
     resources :refworks_item
   end
 
