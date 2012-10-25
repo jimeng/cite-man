@@ -1,7 +1,8 @@
 class CslProcessor
 
-  def CslProcessor.formatCitations(style_id, citations={})
-
+  def CslProcessor.formatCitations(style_id, citations=[])
+    #Rails.logger.info(citations.to_json.to_s)
+    #Rails.logger.info(citations)
     url = "http://127.0.0.1:8085"
 
     uri = URI.parse(url)
@@ -9,7 +10,13 @@ class CslProcessor
 
     items = {}
     citations.each { |citation|
-      items[citation.attributes[:id]] = citation
+      Rails.logger.info(citation)
+      # debugger
+      if(citation === ZoteroItem) 
+        items[citation.attributes[:id]] = citation
+      else
+        items[citation[:id]] = citation
+      end 
     }
    
     json = items.to_json
@@ -18,17 +25,24 @@ class CslProcessor
 
     request.body = "{ \"items\" : " + json.to_s + " }"
 
+    Rails.logger.info('===============================================')
+    Rails.logger.info(request.body)
+    Rails.logger.info('===============================================')
+
     response = Net::HTTP.start(uri.host, uri.port) do |http|
       http.request(request)
     end
 
+    Rails.logger.info(response.body)
+    Rails.logger.info('===============================================')
+    debugger
     json = JSON.parse(response.body)
     html = json["bibliography"][0]['bibstart']
     json["bibliography"][1].each {|div|
       html += div + "\n"
     }
     html += json["bibliography"][0]['bibend'] 
-
+    debugger
     return html
 
   end

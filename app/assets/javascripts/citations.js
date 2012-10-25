@@ -106,16 +106,21 @@ citations_manager.init = function() {
 		$('.source_name').live('click', function(eventObject){
 			var link_target = $(eventObject.target).siblings('.items_link_target').text();
 			var citations_url = $(eventObject.target).siblings('.items_link').find('a').attr('href');
+			$('.person_source').removeClass('selectedSource');
+			$(eventObject.target).closest('.person_source').addClass('selectedSource')
 			if("frame" == link_target) {
 				window.location = citations_url;
 			} else {
 				var load_citations = false;
 				var source_type = $(eventObject.target).siblings('.provider').text();
+				alert('source_type == ' + source_type);
 				if('mendeley' == source_type) {
 					var cval = citations_manager.getCookie('mendeley_access_token');
 					if(cval) {
-						load_citations == true;
+						alert('have cookie');
+						load_citations = true;
 					} else {
+						alert('no cookie');
 						$.ajax(citations_url, {
 							dataType: 'json',
 							success : function(json) {
@@ -137,6 +142,13 @@ citations_manager.init = function() {
 											}
 										}]
 									});
+								} else if(json && json.error) {
+									$('#messages').html(json.error);
+									$('#messages').show(4000, function() {
+										$('#messages').hide(8000, function(){
+											$('#messages').html('');
+										});
+									});
 								}
 							}
 						});
@@ -145,14 +157,12 @@ citations_manager.init = function() {
 				} else {
 					load_citations = true;
 				}
+				alert('load_citations == ' + load_citations);
 				if(load_citations) {
-					$('.person_source').removeClass('selectedSource');
-					$(eventObject.target).closest('.person_source').addClass('selectedSource')
-
-
+					alert("load_citations");
 					var source_id = $(eventObject.target).siblings('.source_id').text();
 					var details_url = $(eventObject.target).siblings('.show_link').find('a').attr('href');
-
+					alert('source_id == ' + source_id + "\n details_url == " + details_url);
 					citations_manager.load_source(source_id, details_url, citations_url);
 				}
 			}
@@ -258,11 +268,11 @@ citations_manager.close_dialog = function() {
 };
 
 citations_manager.load_source = function(source_id, details_url, citations_url) {
-
+	alert('getting citations');
 	if(citations_url) {
+		alert('requesting html');
 		$.ajax(citations_url, {
 			dataType: 'html',
-
 			success: function(html) {
 				$('#items_list').html(html);
 			},
@@ -271,6 +281,7 @@ citations_manager.load_source = function(source_id, details_url, citations_url) 
 			}
 		})
 	} else if(details_url) {
+		alert('requesting json');
 		$.ajax(details_url, {
 			dataType: 'json',
 
@@ -288,6 +299,7 @@ citations_manager.load_source = function(source_id, details_url, citations_url) 
 			}
 		})
 	} else {
+		alert('no request');
 		$('#items_list').html('');
 	}
 

@@ -5,9 +5,23 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
+		var sources_list = parent.document.getElementById("sources_list");
+		var items_list = parent.document.getElementById("items_list");
+		var selectedSource = parent.window.$(sources_list).find('.selectedSource');
+		var citations_url = parent.window.$(selectedSource).find('.items_link a').attr('href');
+		parent.window.$.ajax(citations_url, {
+			dataType: 'html',
+			success: function(html) {
+				parent.window.$(items_list).html(html);
+				parent.window.$(dialog).html('');
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				parent.window.$(items_list).html("Error processing click: " + textStatus + "\n code: " + errorThrown);
+				parent.window.$(dialog).html('');
+			}			
+		});
 		var dialog = parent.document.getElementById("dialog");
-		alert(dialog);
 		parent.window.$(dialog).dialog('close');
-		// $(dialog).html('');
+		
 	});
 </script>
