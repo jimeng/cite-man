@@ -66,66 +66,111 @@ class MendeleyItem < ActiveResource::Base
     citations.each { |citation|
       formatted_citation = {}
       issued = []
+      ctype = citation[:type]
+      if(ctype.nil?) 
+        Rails.logger.info('ctype nil 1')
+        ctype = citation['type']
+      end
+      if(ctype.nil?) 
+        Rails.logger.info('ctype nil 2')
+        ctype = citation.type
+      end
+      Rails.logger.info(ctype)
       citation.each{ |name,value|
-        case name
-        when 'id'
-          formatted_citation[:id] = value.to_s
-        when 'type'
-          formatted_citation[:type] = MendeleyItem.processType(value)
-        when 'authors'
-          formatted_citation[:author] = MendeleyItem.processNameList(value)
-         when 'editors'
-          formatted_citation[:editor] = MendeleyItem.processNameList(value)
-        when "seriesEditor"
-          formatted_citation["collection-editor"] = MendeleyItem.processNameList(value)
-        when "keywords"
-          formatted_citation["keywords"] = MendeleyItem.processStringList(value)
-        when 'title'
-          formatted_citation[:title] = value
-        when "shortTitle"
-          formatted_citation["title-short"] = value
-          formatted_citation[:shortTitle] = value
+        case name.downcase
         when 'abstract'
           formatted_citation[:abstract] = value
-        when 'language'
-          formatted_citation[:language] = value
+        when 'authors'
+          formatted_citation[:author] = MendeleyItem.processNameList(value)
+        when 'book'
+          formatted_citation['container-title'] = value
+        when 'chapter'
+          formatted_citation['chapter-number'] = value
+        when 'city'
+          formatted_citation['publisher-place'] = value
+        when 'code pages'
+          formatted_citation[:page] = value
+        when 'date accessed'
+          formatted_citation[:accessed] = MendeleyItem.processDate(value)
+        when 'distributor'
+          formatted_citation[:publisher] = value
         when 'doi'
           formatted_citation[:DOI] = value
         when 'edition'
           formatted_citation[:edition] = value.to_s
-        when "volume"
-          formatted_citation[:volume] = value.to_s
+         when 'editors'
+          formatted_citation[:editor] = MendeleyItem.processNameList(value)
+        when 'encyclopedia'
+          formatted_citation['container-title'] = value
+        when 'genre'
+          formatted_citation[:genre] = value
+        when 'id'
+          formatted_citation[:id] = value.to_s
+        when 'isbn'
+          formatted_citation[:ISBN] = value
+        when 'issn'
+          formatted_citation[:ISBN] = value
         when "issue"
           formatted_citation[:issue] = value.to_s
-        when "revisionNumber"
-          formatted_citation[:version] = value.to_s
-        when "chapter"
-          formatted_citation["chapter-number"] = value.to_s
-          formatted_citation[:section] = value.to_s
-        when "dateAccessed"
-          formatted_citation[:accessed] = MendeleyItem.processDate(value)
-        when "website"
-          formatted_citation[:URL] = value
-        when "pages"
-          formatted_citation[:page] = value.to_s
+        when 'issuer'
+          formatted_citation[:publisher] = value
+        when 'journal'
+          formatted_citation['container-title'] = value
+        when "keywords"
+          formatted_citation['keyword'] = MendeleyItem.processStringList(value)
+        when 'language'
+          formatted_citation[:language] = value
+        when 'legislative body'
+          formatted_citation[:publisher] = value
         when "length"
-          formatted_citation["number-of-pages"] = value.to_s
-        when "issn"
-          formatted_citation[:ISSN] = value.to_s
-        when "isbn"
-          formatted_citation[:ISBN] = value.to_s
+          formatted_citation['number-of-pages'] = value.to_s
+        when 'note'
+          formatted_citation[:note] = value
+        when 'number'
+          formatted_citation[:number] = value
+        when 'pages'
+          formatted_citation[:page] = value.to_s
         when "pmid"
           formatted_citation[:PMID] = value.to_s
         when "pmcid"
           formatted_citation[:PMCID] = value.to_s
-        when "publication"
-          formatted_citation["container-title"] = value.to_s
+        when 'proc. title'
+          formatted_citation['container-title'] = value
+        when 'publication'
+          formatted_citation['container-title'] = value
         when "published_in"
-          formatted_citation["container-title"] = value.to_s
-        when "publisher"
-          formatted_citation[:publisher] = value.to_s
-        when "city"
-          formatted_citation["publisher-place"] = value.to_s
+          formatted_citation['container-title'] = value.to_s
+        when 'publisher'
+          formatted_citation[:publisher] = value
+        when 'revision number'
+          formatted_citation[:number] = value
+        when "serieseditor", "series editor"
+          formatted_citation['collection-editor'] = MendeleyItem.processNameList(value)
+        when 'series title'
+          formatted_citation['container-title'] = value
+        when 'series volume'
+          formatted_citation[:volume] = value
+        when 'short title'
+          formatted_citation[:shortTitle] = value
+          formatted_citation['title-short'] = value
+        when 'source'
+          if(ctype == 'Patent')
+            formatted_citation['container-title'] = value
+          else
+            formatted_citation[:publisher] = value
+          end
+        when 'statute number'
+          formatted_citation[:number] = value
+        when 'title'
+          formatted_citation[:title] = value
+        when 'type'
+          formatted_citation[:type] = MendeleyItem.processType(value)
+        when 'version'
+          formatted_citation[:number] = value
+        when 'volume'
+          formatted_citation[:volume] = value.to_s
+        when "website"
+          formatted_citation[:URL] = value
         when "year"
           issued[0] = value.to_s
         when "month"
@@ -181,47 +226,47 @@ class MendeleyItem < ActiveResource::Base
   end
 
   def MendeleyItem.processType(type) 
-    case type
-    when "Bill"
-      "bill"
-    when "Book"
-      "book"
-    when "Book Section"
-      "chapter"
-    when "Case"
-      "legal_case"
-    when "Computer Program"
-      ""
-    when "Conference Proceedings"
-      "paper-conference"
-    when "Encyclopedia Article"
-      "entry-encyclopedia"
-    when "Film"
-      "motion_picture"
-    when "Generic"
-      ""
-    when "Hearing"
-      ""
-    when "Journal Article"
-      "article-journal"
-    when "Magazine Article"
-      "article-magazine"
-    when "Newspaper Article"
-      "article-newspaper"
-    when "Patent"
-      "patent"
-    when "Report"
-      "report"
-    when "Statute"
-      "legislation"
-    when "Television Broadcast"
-      "broadcast"
-    when "Thesis"
-      "thesis"
-    when "Web Page"
-      "webpage"
-    when "Working Paper"
-      ""
+    case type.downcase
+      when 'bill'
+        'bill'
+      when 'book'
+        'book'
+      when 'book section'
+        'chapter'
+      when 'case'
+        'article'
+      when 'computer program'
+        'article'
+      when 'conference proceedings'
+        'paper-conference'
+      when 'encyclopedia article'
+        'entry-encyclopedia'
+      when 'film'
+        'motion_picture'
+      when 'generic'
+        'article'
+      when 'hearing'
+        'speech'
+      when 'journal article'
+        'article-journal'
+      when 'magazine article'
+        'article-magazine'
+      when 'newspaper article'
+        'article-newspaper'
+      when 'patent'
+        'patent'
+      when 'report'
+        'report'
+      when 'statute'
+        'legislation'
+      when 'television broadcast'
+        'broadcast'
+      when 'thesis'
+        'thesis'
+      when 'web page'
+        'webpage'
+      when 'working paper'
+          'article'
     end
   end
 
