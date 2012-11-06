@@ -19,13 +19,12 @@ class MendeleyItemController < ActionController::Base
       #logger.info(session[:access_token])
       render_citations
     else
-      redirect_to mendeley_auth_url(@source) 
+      permission_denied
     end
   end
 
   def access
     logger.info('MendeleyItemController.access')
-    cookies.delete('mendeley_access_token')
     begin
       @request_token = session[:request_token]
       oauth_verifier = params[:oauth_verifier]
@@ -33,12 +32,12 @@ class MendeleyItemController < ActionController::Base
 
       @access_token = MendeleyItem.getAccessToken(@request_token, oauth_verifier, oauth_token)
       session[:access_token] = @access_token
+      session.delete(:request_token)
+ 
       respond_to do |format|
         format.html
       end
     
-      cookies['mendeley_access_token'] = { :value => 'valid' }
-
     rescue => e
       handle_error(e)
     end 
@@ -47,13 +46,10 @@ class MendeleyItemController < ActionController::Base
   def auth      
     logger.info('MendeleyItemController.auth')
 
-    cookies.delete('mendeley_access_token')
     begin
       @request_token = MendeleyItem.getRequestToken(mendeley_access_url(@source)) 
       session[:request_token] = @request_token
       r_token = {}
-      r_token[:request_token] = @request_token
-
       r_token[:authorize_url] = @request_token.authorize_url
 
       #logger.info(r_token)
@@ -68,8 +64,8 @@ class MendeleyItemController < ActionController::Base
 
   def handle_error(e)
     rv = {}
-    rv[:request_token] = nil
-    rv[:authorize_url] = nil
+    #rv[:request_token] = nil
+    #rv[:authorize_url] = nil
     case e
     when Net::HTTPServiceUnavailable
       rv[:error] = "Mendeley is up, but something went wrong, please try again later."
@@ -77,15 +73,12 @@ class MendeleyItemController < ActionController::Base
       rv[:error] = "The request was invalid. #{e.message}."
     when Net::HTTPUnauthorized
       rv[:error] = "Authentication credentials were missing or incorrect."
-      cookies.delete('mendeley_access_token')
     when Net::HTTPForbidden
       rv[:error] = "The request is understood, but it has been refused. #{e.message}."
-      cookies.delete('mendeley_access_token')
     when Net::HTTPNotFound
       rv[:error] = "The URI requested is invalid or the resource requested doesn't exist."
     else
       rv[:error] = "Unknown error.  Please try again later"
-      cookies.delete('mendeley_access_token')
     end
     respond_to do |format|
       format.json {render :json => rv}
@@ -98,7 +91,7 @@ class MendeleyItemController < ActionController::Base
     @access_token = session[:access_token]
     #logger.info(@access_token)
     begin
-      @items = MendeleyItem.getCitations( @access_token, 0, 15 ) 
+      @items = MendeleyItem.getCitations( @access_token, 0, 100 ) 
       logger.info('@items.length == ' + @items.length.to_s)
 
       @formatted = MendeleyItem.cslFormat(@items)
@@ -122,20 +115,29 @@ class MendeleyItemController < ActionController::Base
         format.json { render :json => @items }
       end
     rescue => e
-      logger.info('rescuing something')
-      logger.info e.backtrace.join("\n")
-      logger.warn(e.message)
-      handle_error(e)
+      if e.is_a? OAuth::Unauthorized
+        session.delete(:access_token)
+        permission_denied
+      else
+        logger.info('rescuing something')
+        logger.info e.backtrace.join("\n")
+        logger.warn(e.message)
+        handle_error(e)
+      end
     end
   end
 
 private
 
   def load_source 
-    logger.info('loading source in MendeleyItemController')
+    logger.info("loading source in MendeleyItemController #{params[:source_id]}")
     @source = Source.find(params[:source_id])
-    logger.info('loaded source in MendeleyItemController')
+    logger.info("loaded source in MendeleyItemController #{@source.inspect}")
 
+  end
+
+  def permission_denied
+    render :file => "public/401", :status => :unauthorized, :formats => [:html]
   end
 
 end

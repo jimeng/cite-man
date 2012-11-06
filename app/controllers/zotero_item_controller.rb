@@ -25,10 +25,15 @@ class ZoteroItemController < ActionController::Base
     # debugger
 
      #Rails.logger.info('===============================')
+
+    @formatted = ZoteroItem.cslFormat(@items)
+
     style = @source.default_style
     style = 'mla' if style.nil? 
+
     # @styled = CslProcessor.formatCitations('mla-url', 'html', @items)
-    @styled = CslProcessor.formatCitations(style, @items)
+    
+    @styled = CslProcessor.formatCitations(style, @formatted[:items])
 
     #logger.info(@styled)
     #Rails.logger.info('===============================')

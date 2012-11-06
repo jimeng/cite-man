@@ -8,7 +8,11 @@ class MendeleyItem < ActiveResource::Base
   #self.element_name = "items"
 
   def MendeleyItem.getRequestToken(callbackUrl)
-    consumer = OAuth::Consumer.new( "97f4e0896ab36d7b55e5f1a2b81e396c05010616b","034392514f666e3f236973d935757097", {
+
+    key = ConfigValue.where(:source_type => 'mendeley', :name => 'key').first[:value]
+    secret = ConfigValue.where(:source_type => 'mendeley', :name => 'secret').first[:value]
+
+    consumer = OAuth::Consumer.new( key,secret, {
       :site				  => self.site,
       :scheme             => :header,
       :http_method        => :get,
@@ -18,9 +22,9 @@ class MendeleyItem < ActiveResource::Base
     })
     begin
       request_token = consumer.get_request_token({:oauth_callback => callbackUrl})
-      #Rails.logger.info(request_token)
+      ##Rails.logger.info(request_token)
       authorize_url = request_token.authorize_url
-      #Rails.logger.info(authorize_url)
+      ##Rails.logger.info(authorize_url)
     rescue => e
       Rails.logger.warn(e.message)
       #Rails.logger.warn(e.class)
@@ -34,14 +38,14 @@ class MendeleyItem < ActiveResource::Base
   end
 
   def MendeleyItem.getCitations(access_token, page = 0, items = 20)
-    Rails.logger.info("MendeleyItem.getCitations(#{access_token}, #{page}, #{items})")
+    #Rails.logger.info("MendeleyItem.getCitations(#{access_token}, #{page}, #{items})")
     response = access_token.get("/oapi/library/?page=#{page}&items=#{items}")
-    #Rails.logger.info(response)
+    ##Rails.logger.info(response)
     if(Net::HTTPSuccess === response) 
       hash = JSON.parse( response.body )
-      #Rails.logger.info(hash)
+      ##Rails.logger.info(hash)
       document_ids = hash['document_ids']
-      #Rails.logger.info(document_ids)
+      Rails.logger.info(document_ids)
       list = []
       document_ids.each { |id| 
         # /oapi/library/documents/123456789/
@@ -51,7 +55,7 @@ class MendeleyItem < ActiveResource::Base
           list.push cite
        end
       }
-      #Rails.logger.info( list )
+      ##Rails.logger.info( list )
       #debugger
     else
       list = []
@@ -62,20 +66,20 @@ class MendeleyItem < ActiveResource::Base
 
   def MendeleyItem.cslFormat(citations = [])
     formatted_citations = []
-    Rails.logger.info('================ MendeleyItem.cslFormat() ===================')
+    #Rails.logger.info('================ MendeleyItem.cslFormat() ===================')
     citations.each { |citation|
       formatted_citation = {}
       issued = []
       ctype = citation[:type]
       if(ctype.nil?) 
-        Rails.logger.info('ctype nil 1')
+        #Rails.logger.info('ctype nil 1')
         ctype = citation['type']
       end
       if(ctype.nil?) 
-        Rails.logger.info('ctype nil 2')
+        #Rails.logger.info('ctype nil 2')
         ctype = citation.type
       end
-      Rails.logger.info(ctype)
+      #Rails.logger.info(ctype)
       citation.each{ |name,value|
         case name.downcase
         when 'abstract'
@@ -90,7 +94,7 @@ class MendeleyItem < ActiveResource::Base
           formatted_citation['publisher-place'] = value
         when 'code pages'
           formatted_citation[:page] = value
-        when 'date accessed'
+        when 'date accessed', 'dateaccessed'
           formatted_citation[:accessed] = MendeleyItem.processDate(value)
         when 'distributor'
           formatted_citation[:publisher] = value
@@ -106,10 +110,18 @@ class MendeleyItem < ActiveResource::Base
           formatted_citation[:genre] = value
         when 'id'
           formatted_citation[:id] = value.to_s
+        when 'identifiers'
+          if value.nil?
+
+          elsif value.is_a? Array
+            value.each{ |n,v| 
+              formatted_citation[n] = v
+            }
+          end
         when 'isbn'
           formatted_citation[:ISBN] = value
         when 'issn'
-          formatted_citation[:ISBN] = value
+          formatted_citation[:ISSN] = value
         when "issue"
           formatted_citation[:issue] = value.to_s
         when 'issuer'
@@ -150,7 +162,7 @@ class MendeleyItem < ActiveResource::Base
           formatted_citation['container-title'] = value
         when 'series volume'
           formatted_citation[:volume] = value
-        when 'short title'
+        when 'short title', 'short_title'
           formatted_citation[:shortTitle] = value
           formatted_citation['title-short'] = value
         when 'source'
@@ -171,6 +183,8 @@ class MendeleyItem < ActiveResource::Base
           formatted_citation[:volume] = value.to_s
         when "website"
           formatted_citation[:URL] = value
+        when 'url'
+          formatted_citation[:URL] = value
         when "year"
           issued[0] = value.to_s
         when "month"
@@ -178,20 +192,20 @@ class MendeleyItem < ActiveResource::Base
         when "day"
           issued[2] = value.to_s
         else
-          Rails.logger.info("#{name} == #{value}")
+          #Rails.logger.info("#{name} == #{value}")
         end
       }
       formatted_citation[:issued] = { "date-parts" => issued }
       formatted_citations.push(formatted_citation)
-      Rails.logger.info(formatted_citation.to_json.to_s)
-      Rails.logger.info('---------------- MendeleyItem.cslFormat() -------------------')
+      #Rails.logger.info(formatted_citation.to_json.to_s)
+      #Rails.logger.info('---------------- MendeleyItem.cslFormat() -------------------')
 
     }
     rv = {}
     rv[:items] = formatted_citations
     #rv[:citationItems] = formatted_citations
-    #Rails.logger.info(rv)
-    Rails.logger.info('================ MendeleyItem.cslFormat() ===================')
+    ##Rails.logger.info(rv)
+    #Rails.logger.info('================ MendeleyItem.cslFormat() ===================')
     return rv
   end
 

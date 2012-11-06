@@ -4,32 +4,44 @@
     <span class="source_id" style="display:none;">
       999999
     </span>
+    <span class="items_link" style="display:none;">
+      <%= link_to 'items', person_favorite_item_index_path(@person) %>
+    </span>
   </li>
   <% @sources.each do |source| %>
-  <li class="person_source">
-    <span class="source_name">
-      <%= source.name %>
-    </span>
-    <span class="revise_link">
-      <%= link_to 'revise', edit_person_source_path(@person, source) %> 
-    </span>
-    <span class="remove_link">
-      <%= link_to 'remove', [@person, source] %>
-    </span>
-    <span class="source_id" style="display:none;"><%= source.id %></span>
-    <span class="provider" style="display:none;"><%= source.provider %></span>
-    <span class="source_person_id" style="display:none;">
-      <%= source.person_id %>
-    </span>
-    <span class="show_link" style="display:none;">
-      <%= link_to 'show', [@person, source] %>
-    </span>
-    <span class="items_link" style="display:none;">
-      <%= link_to 'items', source.items_link[:link] %>
-    </span>
-    <span class="items_link_target" style="display:none;"><%= source.items_link[:target] %></span>
-    <span class="client_type" style="display:none;"><%= source.client_type %></span>
-    <span class="uid" style="display:none;"><%= source.uid %></span>
+    <li class="person_source">
+      <span class="source_name">
+        <%= source.name %>
+      </span>
+      <span class="revise_link">
+        <%= link_to 'revise', edit_person_source_path(@person, source) %> 
+      </span>
+      <span class="remove_link">
+        <%= link_to 'remove', [@person, source] %>
+      </span>
+      <span class="source_id" style="display:none;"><%= source.id %></span>
+      <span class="provider" style="display:none;"><%= source.provider %></span>
+      <span class="source_person_id" style="display:none;">
+        <%= source.person_id %>
+      </span>
+      <span class="show_link" style="display:none;">
+        <%= link_to 'show', [@person, source] %>
+      </span>
+      <span class="items_link" style="display:none;">
+        <%= link_to 'items', source.items_link[:link] %>
+      </span>
+
+      <span class="oauth_url" style="display:none;">
+        <% if source.provider == 'mendeley' %>
+          <%= link_to 'auth', mendeley_auth_url(source) %>
+        <% else %>
+          <a href="#">noauth</a>
+        <% end %>
+      </span>    
+      
+      <span class="items_link_target" style="display:none;"><%= source.items_link[:target] %></span>
+      <span class="client_type" style="display:none;"><%= source.client_type %></span>
+      <span class="uid" style="display:none;"><%= source.uid %></span>
   </li>
   <% end %>
 </ul>
