@@ -6,12 +6,10 @@ class Person < ActiveRecord::Base
 
   private
   	def default_values
-  	  logger.info('Person.default_values')
-  	  logger.info(Citations::Application.config.default_style)
-  	  logger.info(self.preferred_style)
+  	  #logger.info('Person.default_values')
 
   	  self.preferred_style ||= Citations::Application.config.default_style
-  	  logger.info(self.preferred_style)
-  	  
+  	  #logger.info(self.preferred_style)
+
   	end
 end

@@ -5,10 +5,16 @@
 	<span id="preferences">
 		<%= link_to 'Preferences',  edit_person_path(@person) %>
 	</span>
+	<% if @is_admin %>
+		<span>
+			<%= link_to 'Config', config_values_path %>
+		</span>
+	<% end %>
 
 </div>
 
 <h1>Citations Manager</h1>
+<div id="messages" style="display:none;"></div>
 <table width="100%">
 	<tr>
 		<th id="sources_head" width="33%" align="left">
@@ -24,8 +30,14 @@
 			<!-- rendering _sources.html.erb -->
 			<%= render 'sources' %>
 		</td>
-		<td headers="items_head" id="items_list" valign="top" style="margin:0em 2em 0em 2em;">
-			
+		<td headers="items_head" valign="top" style="margin:0em 2em 0em 2em;">
+			<ul>
+			  <li class="cite_action">
+			    <a href="#" class="copy_citations">Copy</a>
+			  </li>
+			</ul>
+			<div id="items_list">
+			</div>
 		</td>
 	</tr>
 </table>
