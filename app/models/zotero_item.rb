@@ -100,7 +100,7 @@ class ZoteroItem < ActiveResource::Base
       when NAME_FIELDS.include?(name)
         hsh[name] = ZoteroItem.processNameField(value)      
       else
-        hsh[name] = value
+        hsh[name] = value.to_json
       end
       if name == 'id'
         @id = value
@@ -113,7 +113,7 @@ class ZoteroItem < ActiveResource::Base
     # debugger
     hsh = {}
     val.attributes.each { |name, value| 
-      hsh[name] = value
+      hsh[name] = value.to_json
     }
     return hsh
   end
@@ -131,7 +131,7 @@ class ZoteroItem < ActiveResource::Base
     val.each{ |item|
       hsh = {}
       item.attributes.each { |name, value| 
-        hsh[name] = value
+        hsh[name] = value.to_json
       }
       list.push(hsh)
     }
@@ -164,7 +164,7 @@ class ZoteroItem < ActiveResource::Base
         when NAME_FIELDS.include?(name.to_s)
           formatted_citation[name] = ZoteroItem.processEmbeddedNameField(value)      
         else
-          formatted_citation[name] = value
+          formatted_citation[name] = value.to_json
         end
 
       }

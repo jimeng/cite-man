@@ -19,6 +19,44 @@ citations_manager.getCookie = function(cookie_name) {
 	}
 };
 
+/**
+ * Converts the given data structure to a JSON string.
+ * Argument: arr - The data structure that must be converted to JSON
+ * Example: var json_string = array2json(['e', {pluribus: 'unum'}]);
+ * 			var json = array2json({"success":"Sweet","failure":false,"empty_array":[],"numbers":[1,2,3],"info":{"name":"Binny","site":"http:\/\/www.openjs.com\/"}});
+ * http://www.openjs.com/scripts/data/json_encode.php
+ * BSD License
+ * http://opensource.org/licenses/BSD-3-Clause
+ */
+function array2json(arr) {
+    var parts = [];
+    var is_list = (Object.prototype.toString.apply(arr) === '[object Array]');
+
+    for(var key in arr) {
+    	var value = arr[key];
+        if(typeof value == "object") { //Custom handling for arrays
+            if(is_list) parts.push(array2json(value)); /* :RECURSION: */
+            else parts[key] = array2json(value); /* :RECURSION: */
+        } else {
+            var str = "";
+            if(!is_list) str = '"' + key + '":';
+
+            //Custom handling for multiple data types
+            if(typeof value == "number") str += value; //Numbers
+            else if(value === false) str += 'false'; //The booleans
+            else if(value === true) str += 'true';
+            else str += '"' + value + '"'; //All other things
+            // :TODO: Is there any more datatype we should be in the lookout for? (Functions?)
+
+            parts.push(str);
+        }
+    }
+    var json = parts.join(",");
+    
+    if(is_list) return '[' + json + ']';//Return numerical JSON
+    return '{' + json + '}';//Return associative JSON
+}
+
 citations_manager.renderred_citations = {};
 
 citations_manager.oauthUsers = ['mendeley'];
@@ -220,13 +258,71 @@ citations_manager.init = function() {
 				$('.copy_citations').attr('disabled', 'true');
 			}
 		});
-		$('.copy_citations').live('click', function(eventObject){
-			var obj = {};
+		$('.cite_action').ajaxStop(function(){
+			if(citations_manager.copy_count  && citations_manager.copy_count  > 0) {
+				alert("citations_manager.copy_count == " + citations_manager.copy_count + "\ncitations_manager.new_count  == " + citations_manager.new_count + "\ncitations_manager.err_count  == " + citations_manager.err_count );
+			}
+			citations_manager.copy_count = -1;
+			citations_manager.new_count = 0;
+			citations_manager.err_count = 0;
+		});
+		$('.cite_action a').live('click', function(eventObject){
+			eventObject.preventDefault();
+			var url = $(eventObject.target).attr('href');
+			citations_manager.new_count = 0;
+			citations_manager.err_count = 0;
+			citations_manager.copy_count = $('.citation_checkbox :checked').size();
 			$('.citation_checkbox :checked').each(function(index, element) {
 				var key = $(element).val();
-				obj[key] = citations_manager.renderred_citations[key];
-				alert(Object.keys(obj).length);
+				var val = citations_manager.renderred_citations[key];
+				var token = $('#clipboard_form').find('input[name="authenticity_token"]').val();
+				var params = {'citation_id' : key, 'citation' : array2json(val), 'authenticity_token' : token};
+				$.ajax(url, {
+					type : 'POST',
+					data : params,
+					dataType : 'json',
+					success : function(jsObj){
+						citations_manager.new_count++;
+					},
+					error : function(jqXHR, textStatus, errorThrown){
+						alert("Error processing click: " + textStatus + "\n code: " + errorThrown);
+						citations_manager.err_count++;
+					}
+
+				});
 			});
+			alert('add ' + new_count + ' citations to clipboard (' + err_count + ' errors).')
+			
+			return false;
+		});
+		$('#show_clipboard').find('a').live('click', function(eventObject) {
+			eventObject.preventDefault();
+			var url = $(eventObject.target).attr('href');
+			$.ajax(url, {
+				success : function(data){
+					$('#clipboard').html(data);
+					$('#clipboard').dialog({
+						title: "Clipboard",
+						width: 700,
+						modal: true,
+						draggable: true,
+						autoOpen: true,
+						buttons: [{
+							text: "Paste",
+								click: function(button){
+									$('#clipboard').dialog("close");
+									$('#clipboard').html('');
+								}
+						}, {
+							text: "Close",
+								click: function(){
+									$('#clipboard').dialog("close");
+									$('#clipboard').html('');
+								}
+						}]
+					});
+				}
+			});			
 			return false;
 		});
 	});

@@ -1,13 +1,17 @@
 Citations::Application.routes.draw do
 
+
   resources :config_values
 
   match "/sources/:source_id/mendeley/auth" => "mendeley_item#auth", :as => :mendeley_auth
   match "/sources/:source_id/mendeley/access" => "mendeley_item#access", :as => :mendeley_access
+
+  resources :clipboard_items
  
   resources :people do
     resources :sources
     resources :favorite_item
+    resources :clipboard_items
   end
 
   resources :sources do

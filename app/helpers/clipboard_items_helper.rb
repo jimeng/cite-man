@@ -1,0 +1,2 @@
+module ClipboardItemsHelper
+end

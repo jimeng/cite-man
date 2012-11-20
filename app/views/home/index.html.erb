@@ -10,7 +10,9 @@
 			<%= link_to 'Config', config_values_path %>
 		</span>
 	<% end %>
-
+	<span id='show_clipboard'>
+		<%= link_to 'Show Clipboard', person_clipboard_items_path(@person) %>
+	</span>
 </div>
 
 <h1>Citations Manager</h1>
@@ -33,7 +35,7 @@
 		<td headers="items_head" valign="top" style="margin:0em 2em 0em 2em;">
 			<ul>
 			  <li class="cite_action">
-			    <a href="#" class="copy_citations">Copy</a>
+			    <%= link_to 'Copy', person_clipboard_items_path(@person) %>
 			  </li>
 			</ul>
 			<div id="items_list">
@@ -43,6 +45,8 @@
 </table>
 
 <div id="dialog">
+</div>
+<div id="clipboard">
 </div>
 
 <div style="display:none;">
@@ -65,4 +69,15 @@
 		<%= @person.family_name %>
 		(@person.family_name)
 	</p>
+</div>
+<div id="clipboard_form" style="display:none;">
+	<%= form_for @clipboard_item, :url =>  person_clipboard_items_path(@person) do |f| %>
+	   <div class="field">
+	    <%= f.label :citation %><br />
+	    <%= f.text_area :citation %>
+	  </div>
+	  <div class="actions">
+	    <%= f.submit %>
+	  </div>
+	<% end %>
 </div>
