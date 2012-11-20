@@ -1,0 +1,10 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Citation:</b>
+  <%= @clipboard_item.citation %>
+</p>
+
+
+<%= link_to 'Edit', edit_clipboard_item_path(@clipboard_item) %> |
+<%= link_to 'Back', clipboard_items_path %>

@@ -83,116 +83,116 @@ class MendeleyItem < ActiveResource::Base
       citation.each{ |name,value|
         case name.downcase
         when 'abstract'
-          formatted_citation[:abstract] = value
+          formatted_citation[:abstract] = value.to_json
         when 'authors'
           formatted_citation[:author] = MendeleyItem.processNameList(value)
         when 'book'
-          formatted_citation['container-title'] = value
+          formatted_citation['container-title'] = value.to_json
         when 'chapter'
-          formatted_citation['chapter-number'] = value
+          formatted_citation['chapter-number'] = value.to_json
         when 'city'
-          formatted_citation['publisher-place'] = value
+          formatted_citation['publisher-place'] = value.to_json
         when 'code pages'
-          formatted_citation[:page] = value
+          formatted_citation[:page] = value.to_json
         when 'date accessed', 'dateaccessed'
           formatted_citation[:accessed] = MendeleyItem.processDate(value)
         when 'distributor'
-          formatted_citation[:publisher] = value
+          formatted_citation[:publisher] = value.to_json
         when 'doi'
-          formatted_citation[:DOI] = value
+          formatted_citation[:DOI] = value.to_json
         when 'edition'
-          formatted_citation[:edition] = value.to_s
+          formatted_citation[:edition] = value.to_json
          when 'editors'
           formatted_citation[:editor] = MendeleyItem.processNameList(value)
         when 'encyclopedia'
-          formatted_citation['container-title'] = value
+          formatted_citation['container-title'] = value.to_json
         when 'genre'
-          formatted_citation[:genre] = value
+          formatted_citation[:genre] = value.to_json
         when 'id'
-          formatted_citation[:id] = value.to_s
+          formatted_citation[:id] = value.to_json
         when 'identifiers'
           if value.nil?
 
           elsif value.is_a? Array
             value.each{ |n,v| 
-              formatted_citation[n] = v
+              formatted_citation[n] = v.to_json
             }
           end
         when 'isbn'
-          formatted_citation[:ISBN] = value
+          formatted_citation[:ISBN] = value.to_json
         when 'issn'
-          formatted_citation[:ISSN] = value
+          formatted_citation[:ISSN] = value.to_json
         when "issue"
-          formatted_citation[:issue] = value.to_s
+          formatted_citation[:issue] = value.to_json
         when 'issuer'
-          formatted_citation[:publisher] = value
+          formatted_citation[:publisher] = value.to_json
         when 'journal'
-          formatted_citation['container-title'] = value
+          formatted_citation['container-title'] = value.to_json
         when "keywords"
           formatted_citation['keyword'] = MendeleyItem.processStringList(value)
         when 'language'
-          formatted_citation[:language] = value
+          formatted_citation[:language] = value.to_json
         when 'legislative body'
-          formatted_citation[:publisher] = value
+          formatted_citation[:publisher] = value.to_json
         when "length"
-          formatted_citation['number-of-pages'] = value.to_s
+          formatted_citation['number-of-pages'] = value.to_json
         when 'note'
-          formatted_citation[:note] = value
+          formatted_citation[:note] = value.to_json
         when 'number'
-          formatted_citation[:number] = value
+          formatted_citation[:number] = value.to_json
         when 'pages'
-          formatted_citation[:page] = value.to_s
+          formatted_citation[:page] = value.to_json
         when "pmid"
-          formatted_citation[:PMID] = value.to_s
+          formatted_citation[:PMID] = value.to_json
         when "pmcid"
-          formatted_citation[:PMCID] = value.to_s
+          formatted_citation[:PMCID] = value.to_json
         when 'proc. title'
-          formatted_citation['container-title'] = value
+          formatted_citation['container-title'] = value.to_json
         when 'publication'
-          formatted_citation['container-title'] = value
+          formatted_citation['container-title'] = value.to_json
         when "published_in"
-          formatted_citation['container-title'] = value.to_s
+          formatted_citation['container-title'] = value.to_json
         when 'publisher'
-          formatted_citation[:publisher] = value
+          formatted_citation[:publisher] = value.to_json
         when 'revision number'
-          formatted_citation[:number] = value
+          formatted_citation[:number] = value.to_json
         when "serieseditor", "series editor"
           formatted_citation['collection-editor'] = MendeleyItem.processNameList(value)
         when 'series title'
-          formatted_citation['container-title'] = value
+          formatted_citation['container-title'] = value.to_json
         when 'series volume'
-          formatted_citation[:volume] = value
+          formatted_citation[:volume] = value.to_json
         when 'short title', 'short_title'
-          formatted_citation[:shortTitle] = value
-          formatted_citation['title-short'] = value
+          formatted_citation[:shortTitle] = value.to_json
+          formatted_citation['title-short'] = value.to_json
         when 'source'
           if(ctype == 'Patent')
-            formatted_citation['container-title'] = value
+            formatted_citation['container-title'] = value.to_json
           else
-            formatted_citation[:publisher] = value
+            formatted_citation[:publisher] = value.to_json
           end
         when 'statute number'
-          formatted_citation[:number] = value
+          formatted_citation[:number] = value.to_json
         when 'title'
-          formatted_citation[:title] = value
+          formatted_citation[:title] = value.to_json
         when 'type'
           formatted_citation[:type] = MendeleyItem.processType(value)
         when 'version'
-          formatted_citation[:number] = value
+          formatted_citation[:number] = value.to_json
         when 'volume'
-          formatted_citation[:volume] = value.to_s
+          formatted_citation[:volume] = value.to_json
         when "website"
-          formatted_citation[:URL] = value
+          formatted_citation[:URL] = value.to_json
         when 'url'
-          formatted_citation[:URL] = value
+          formatted_citation[:URL] = value.to_json
         when "year"
-          issued[0] = value.to_s
+          issued[0] = value.to_json
         when "month"
-          issued[1] = value.to_s
+          issued[1] = value.to_json
         when "day"
-          issued[2] = value.to_s
+          issued[2] = value.to_json
         else
-          #Rails.logger.info("#{name} == #{value}")
+          Rails.logger.info("#{name} == #{value}")
         end
       }
       formatted_citation[:issued] = { "date-parts" => issued }
@@ -213,8 +213,8 @@ class MendeleyItem < ActiveResource::Base
     formatted_list = []
     raw_list.each { |author| 
       formatted_author = {}
-      formatted_author[:family] = author["surname"]
-      formatted_author[:given] = author["forename"]
+      formatted_author[:family] = author["surname"].to_json
+      formatted_author[:given] = author["forename"].to_json
       formatted_list.push( formatted_author )
     }
     return formatted_list
@@ -229,13 +229,13 @@ class MendeleyItem < ActiveResource::Base
     begin
       date = Date.strptime(raw_date, '%d/%m/%y')
       dateparts = []
-      dateparts.push(date.year.to_s)
-      dateparts.push(date.mon.to_s)
-      dateparts.push(date.mday.to_s)
+      dateparts.push(date.year.to_json)
+      dateparts.push(date.mon.to_json)
+      dateparts.push(date.mday.to_json)
       rv['date-parts'] = dateparts
     rescue => e
-      rv[:raw] = raw_date.to_s
-      rv[:literal] = raw_date.to_s
+      rv[:raw] = raw_date.to_json
+      rv[:literal] = raw_date.to_json
     end
   end
 

@@ -1,0 +1,20 @@
+<table>
+  <tr>
+    <th>Citation</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @clipboard_items.each do |clipboard_item| %>
+  <tr>
+    <td><%= clipboard_item.citation %></td>
+    <td><%= link_to 'Show', clipboard_item %></td>
+    <td><%= link_to 'Edit', edit_clipboard_item_path(clipboard_item) %></td>
+    <td><%= link_to 'Destroy', clipboard_item, :method => :delete, :data => { :confirm => 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

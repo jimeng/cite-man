@@ -9,24 +9,34 @@ class CslProcessor
     uri.query = 'responseformat=json&style=' + style_id
 
     items = {}
-    citations.each { |citation|
-      Rails.logger.info(citation.to_json.to_s)
-      # debugger
-      citation_id = citation[:id]
-      if(citation_id.nil? || citation_id == '')
-        citation_id = citation['id']
-      end
-      items[citation_id] = citation
-    }
-   
-    json = items.to_json
-    #Rails.logger.info(items.class)
-    Rails.logger.info(items.inspect)
 
-    Rails.logger.info(json.to_s)
+    if(citations.is_a?(Array))
+      citations.each { |citation|
+        Rails.logger.info(citation.to_json.to_s)
+        # debugger
+        citation_id = citation[:id]
+        if(citation_id.nil? || citation_id == '')
+          citation_id = citation['id']
+        end
+        items[citation_id] = citation
+      }
+      #Rails.logger.info(items.class)
+      #Rails.logger.info(items.inspect)
+
+      json = items.to_json
+      #Rails.logger.info(json.to_s)
+      jsonStr = "{ \"items\" : " + json.to_s + " }"
+    elsif citations.is_a?(String)
+      jsonStr = citations
+      items = JSON.parse(citations)["items"]
+    end
+   
+    Rails.logger.info(jsonStr.class)
+    Rails.logger.info(items.class)
+ 
     request = Net::HTTP::Post.new(uri.request_uri)
 
-    request.body = "{ \"items\" : " + json.to_s + " }"
+    request.body = jsonStr
 
     #Rails.logger.info('1 ===============================================')
     #Rails.logger.info(request.body)
@@ -57,7 +67,8 @@ class CslProcessor
         html += "<tr>" if as_table
         citeId = cite_list[index][0].to_s
         Rails.logger.info(citeId)
-        Rails.logger.info(items[citeId].to_json)
+        Rails.logger.info(items.class)
+        Rails.logger.info(items.class)
         #Rails.logger.info(json.class)
         Rails.logger.info('----')
         if(include_hidden_json) 
@@ -76,7 +87,7 @@ class CslProcessor
       html += respJson["bibliography"][0]['bibend'] 
     rescue => e
       Rails.logger.info(e.message)
-      Rails.logger.info(e.backtrace.join("\n"))
+      #Rails.logger.info(e.backtrace.join("\n"))
     end
      # debugger
     return html

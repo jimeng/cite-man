@@ -33,7 +33,7 @@ private
       @items = FavoriteItem.getCitations({:uniqname => @person[:user_id]}) 
       logger.info('@items.length == ' + @items.length.to_s)
 
-      @formatted = FavoriteItem.cslFormat(@items)
+      #@formatted = FavoriteItem.cslFormat(@items)
       #debugger
 
       #logger.info('@formatted.length == ' + @formatted[:items].length.to_s)

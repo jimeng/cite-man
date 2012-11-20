@@ -11,7 +11,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121105213535) do
+ActiveRecord::Schema.define(:version => 20121108205224) do
+
+  create_table "clipboard_items", :force => true do |t|
+    t.text     "citation"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "citation_id"
+    t.string   "person_id"
+  end
 
   create_table "config_values", :force => true do |t|
     t.string   "source_type"

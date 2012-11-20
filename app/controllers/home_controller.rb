@@ -4,8 +4,9 @@ class HomeController < ApplicationController
 
   def index
     logger.info("HomeController.index")
-    debugger
+    #debugger
     logger.info( @person.instance_variables )
+    @clipboard_item = ClipboardItem.new
     
     #debugger
     @sources = @person.sources
